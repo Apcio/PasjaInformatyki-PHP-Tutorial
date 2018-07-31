@@ -15,6 +15,7 @@
         echo "<br>";
         echo $imie.', witaj na stronie! - konkatenacja może być z cudzysłowiem';
     ?>
-
+    <br><br>
+    <a href="..\start.html">Powrót do spisu</a>
 </body>
 </html>

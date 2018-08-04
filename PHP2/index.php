@@ -17,6 +17,7 @@
 
     <br/><br/>
     <a href="../start.html">Powrót do spisu</a>
+    
 </body>
 
 </html>

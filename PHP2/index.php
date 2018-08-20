@@ -1,3 +1,12 @@
+<?php
+    session_start();
+
+    if(isset($_SESSION['zalogowany']) && ($_SESSION['zalogowany'] == true) )
+    {
+        header('location: gra.php');
+        exit();
+    }
+?>
 <!DOCTYPE HTML>
 <html lang="pl">
 <head>
@@ -14,6 +23,12 @@
         Hasło: <br /> <input type="password" name="haslo"/> <br/><br/>
         <input type="submit" value="Zaloguj się" />
     </form>
+
+    <?php
+        if(isset($_SESSION['blad']))
+            echo $_SESSION['blad'];
+    ?>
+
 
     <br/><br/>
     <a href="../start.html">Powrót do spisu</a>

@@ -30,46 +30,51 @@
         $haslo = $_POST['haslo'];
 
         $login = htmlentities($login, ENT_QUOTES, "UTF-8");
-        $haslo = htmlentities($haslo, ENT_QUOTES, "UTF-8");
 
         //echo "it Works!";
         //$sql = "SELECT * FROM uzytkownicy WHERE user = '$login' AND pass = '$haslo'";
         //dla lepszej czytelności można użyć sprintf, aby łączyć większą ilość zmiennych do SQLa
         //te funkcje mysqli pozwalają zabezpieczyć zapytanie przed próbą wstrzykiwania SQL
         if ($rezultat = @$polaczenie->query(
-            sprintf("SELECT * FROM uzytkownicy WHERE user = '%s' AND pass = '%s'",
-            mysqli_real_escape_string($polaczenie, $login),
-            mysqli_real_escape_string($polaczenie, $haslo)
+            sprintf("SELECT * FROM uzytkownicy WHERE user = '%s'",
+            mysqli_real_escape_string($polaczenie, $login)
             )
         ))
         {
             $ilu_userow = $rezultat->num_rows;
             if ($ilu_userow > 0)
-            {
-                
+            { 
                 $wiersz = $rezultat->fetch_assoc();
-                $_SESSION['zalogowany'] = true;
-                $_SESSION['id'] = $wiersz['id'];
 
-                //Globalna tablica asocjacyjna, dla danej sesji. Pozwala na przesyłanie zmiennych między
-                //plikami php 
-                $_SESSION['user'] = $wiersz['user'];
-                $_SESSION['drewno'] = $wiersz['drewno'];
-                $_SESSION['kamien'] = $wiersz['kamien'];
-                $_SESSION['zboze'] = $wiersz['zboze'];
-                $_SESSION['email'] = $wiersz['email'];
-                $_SESSION['dnipremium'] = $wiersz['dnipremium'];
-                //echo $user;
-                
-                unset($_SESSION['blad']);
+                if (password_verify($haslo, $wiersz['pass']))
+                {
+                    $_SESSION['zalogowany'] = true;
+                    $_SESSION['id'] = $wiersz['id'];
 
-                $rezultat->close();
-                //inne funkcje zwalniające pamięć
-                //$rezultat->close();
-                //$rezultat->free();
-                //$rezultat->free_result();
+                    //Globalna tablica asocjacyjna, dla danej sesji. Pozwala na przesyłanie zmiennych między
+                    //plikami php 
+                    $_SESSION['user'] = $wiersz['user'];
+                    $_SESSION['drewno'] = $wiersz['drewno'];
+                    $_SESSION['kamien'] = $wiersz['kamien'];
+                    $_SESSION['zboze'] = $wiersz['zboze'];
+                    $_SESSION['email'] = $wiersz['email'];
+                    $_SESSION['dnipremium'] = $wiersz['dnipremium'];
+                    //echo $user;
+                    
+                    unset($_SESSION['blad']);
 
-                header('location: gra.php');
+                    $rezultat->close();
+                    //inne funkcje zwalniające pamięć
+                    //$rezultat->close();
+                    //$rezultat->free();
+                    //$rezultat->free_result();
+
+                    header('location: gra.php');
+                }
+                else {
+                    $_SESSION['blad'] = '<span style="color:red">Nieprawidłowy login lub hasło!</span>';
+                    header('location: index.php');
+                }
             } else
             {
                 unset($_SESSION['zalogowany']);

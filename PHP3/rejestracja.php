@@ -74,6 +74,13 @@
             $_SESSION['e_bot'] = "Potwierdź, że nie jesteś botem!";           
        }
 
+       //Zapamiętaj wprowadzone dane
+       $_SESSION['fr_nick'] = $nick;
+       $_SESSION['fr_email'] = $email;
+       $_SESSION['fr_haslo1'] = $haslo1;
+       $_SESSION['fr_haslo2'] = $haslo2;
+       if (isset($_POST['regulamin'])) $_SESSION['fr_regulamin'] = true;
+
 
        require_once "connect.php";
        mysqli_report(MYSQLI_REPORT_STRICT);
@@ -97,6 +104,35 @@
                     $_SESSION['e_email'] = "Istnieje już konto przypisane do tego adresu e-mail";
                 }
 
+
+                //Czy nick jest już zarezerwowany?
+                $rezultat = $polaczenie-> query("SELECT id FROM uzytkownicy WHERE user='$nick'");
+                if(!$rezultat) throw new Exception($polaczenie->error);
+
+                $ile_takich_nickow = $rezultat->num_rows;
+                if($ile_takich_nickow > 0)
+                {
+                    $wszystko_OK = false;
+                    $_SESSION['e_nick'] = "Istnieje już gracz o takim nicku. Wybierz inny";
+                }
+
+
+                if($wszystko_OK == true)
+                {
+                    //Hurra, wszystkie testy zaliczone, dodajemy gracza do bazy
+                    if ($polaczenie->query("INSERT INTO uzytkownicy 
+                                            VALUES(NULL, '$nick', '$haslo_hash', '$email', 
+                                            100, 100, 100, 14)"))
+                    {
+                        $_SESSION['udanarejestracja'] = true;
+                        header('location: witamy.php');
+                    }
+                    else {
+                        throw new Exception($polaczenie->error);
+                    }
+                }
+
+
                 $polaczenie->close();
             }
        }
@@ -105,13 +141,6 @@
             echo '<span style="color:red;">Błąd serwera! Przepraszamy za niedogodności '
                 .'i prosimy o rejestrację w innym terminie!</span>';
             echo '<br />Informacja developerska '.$e;
-       }
-
-       if($wszystko_OK == true)
-       {
-           //Hurra, wszystkie testy zaliczone, dodajemy gracza do bazy
-           echo "Udana walidacja!";
-           exit();
        }
     }
 ?>
@@ -136,7 +165,12 @@
 
 <body>
     <form method="POST">
-        Nickname: <br /> <input type="text" name="nick"/> <br />
+        Nickname: <br /> <input type="text" value="<?php
+            if(isset($_SESSION['fr_nick'])) {
+                echo $_SESSION['fr_nick'];
+                unset($_SESSION['fr_nick']);
+            }
+        ?>" name="nick"/> <br />
         <?php
             if (isset($_SESSION['e_nick']))
             {
@@ -145,7 +179,12 @@
             }
         ?>
 
-        E-mail: <br /> <input type="text" name="email"/> <br />
+        E-mail: <br /> <input type="text"  value="<?php
+            if(isset($_SESSION['fr_email'])) {
+                echo $_SESSION['fr_email'];
+                unset($_SESSION['fr_email']);
+            }
+        ?>" name="email"/> <br />
         <?php
             if (isset($_SESSION['e_email']))
             {
@@ -154,7 +193,12 @@
             }
         ?>
         
-        Hasło: <br /> <input type="password" name="haslo1"/> <br />
+        Hasło: <br /> <input type="password"  value="<?php
+            if(isset($_SESSION['fr_haslo1'])) {
+                echo $_SESSION['fr_haslo1'];
+                unset($_SESSION['fr_haslo1']);
+            }
+        ?>" name="haslo1"/> <br />
         <?php
             if (isset($_SESSION['e_haslo1']))
             {
@@ -163,7 +207,12 @@
             }
         ?>
 
-        Powtórz hasło: <br /> <input type="password" name="haslo2"/> <br />
+        Powtórz hasło: <br /> <input type="password"  value="<?php
+            if(isset($_SESSION['fr_haslo2'])) {
+                echo $_SESSION['fr_haslo2'];
+                unset($_SESSION['fr_haslo2']);
+            }
+        ?>" name="haslo2"/> <br />
         <?php
             if (isset($_SESSION['e_haslo2']))
             {
@@ -173,7 +222,13 @@
         ?>
 
         <label>
-            <input type="checkbox" name="regulamin"/> Akceptuję regulamin
+            <input type="checkbox" name="regulamin" <?php
+                if(isset($_SESSION['fr_regulamin']))
+                {
+                    echo "checked";
+                    unset($_SESSION['fr_regulamin']);
+                }
+            ?> /> Akceptuję regulamin
         </label>
         <?php
             if (isset($_SESSION['e_regulamin']))

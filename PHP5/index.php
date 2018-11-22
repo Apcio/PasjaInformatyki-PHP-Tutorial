@@ -28,9 +28,23 @@ session_start();
             <article>
                 <form method="post" action="save.php">
                     <label>Podaj adres e-mail
-                        <input type="email" name="email">
+                        <input type="email" name="email"
+                          <?= isset($_SESSION['given_email'])
+                                    ? 'value="'.$_SESSION['given_email'].'"'
+                                    : ''
+                          ?>
+                        >
                     </label>
                     <input type="submit" value="Zapisz się!">
+
+                    <?php
+                        if (isset($_SESSION['error_text'])) {
+                            echo '<p>' . $_SESSION['error_text'] . '</p>';
+                            unset($_SESSION['given_email']);
+                            unset($_SESSION['error_text']);
+                        }
+                    ?>
+
                 </form>
             </article>
         </main>

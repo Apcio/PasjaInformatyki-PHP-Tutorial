@@ -1,21 +1,38 @@
 <?php
 
     session_start();
-    require_once 'database.php';
 
     if (isset($_POST['email'])) {
         $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
         if (empty($email)) {
             $_SESSION['given_email'] = $_POST['email'];
+            $_SESSION['error_text'] = 'Podany adres email jest niepoprawny!';
             header('Location: index.php');
         } else {
-            $query = $db->prepare('INSERT INTO users VALUES (NULL, :email)');
-            $query->bindValue(':email', $email, PDO::PARAM_STR);
-            $query->execute();
+            require_once 'database.php';
+
+            if (isExists($db, $_POST['email']) == false) {
+                $query = $db->prepare('INSERT INTO users VALUES (NULL, :email)');
+                $query->bindValue(':email', $email, PDO::PARAM_STR);
+                $query->execute();
+            } else {
+                $_SESSION['error_text'] = 'Taki adres email już istnieje w bazie danych';
+                header('Location: index.php');
+            }
         }
     } else {
         header('Location: index.php');
         exit();
+    }
+
+    function isExists($db, $eMail) {
+        $query = $db->prepare('SELECT COUNT(*) AS ile FROM users WHERE email = :email');
+        $query->bindValue(':email', $eMail, PDO::PARAM_STR);
+        $query->execute();
+
+        //$rows = $query->fetch();
+        //return ($rows['ile'] > 0);
+        return ($query->fetch()['ile'] > 0);
     }
 ?>
 <!DOCTYPE html>

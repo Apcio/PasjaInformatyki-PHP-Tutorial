@@ -4,6 +4,15 @@
 
     if (!isset($_SESSION['logged_id'])) {
         if (isset($_POST['login'])) {
+
+            require_once 'captchaVerify.php';
+            if (!isCaptchaVerified()) {
+                $_SESSION['user'] = $_POST['email'];
+                $_SESSION['bad_attempt'] = '<p>Captcha nie została zweryfikowana!</p>';
+                header('Location: admin.php');
+                exit();
+            }
+
             $login = filter_input(INPUT_POST, 'login');
             $password = filter_input(INPUT_POST, 'pass');
             
@@ -21,7 +30,8 @@
                 unset($_SESSION['bad_attempt']);
 
             } else {
-                $_SESSION['bad_attempt'] = true;
+                $_SESSION['bad_attempt'] = "<p>Niepoprawny login lub hasło!</p>";
+                $_SESSION['user'] = $login;
                 header('Location: admin.php');
                 exit();
             };

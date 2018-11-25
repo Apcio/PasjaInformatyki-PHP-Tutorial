@@ -9,6 +9,14 @@
             $_SESSION['error_text'] = 'Podany adres email jest niepoprawny!';
             header('Location: index.php');
         } else {
+            require_once 'captchaVerify.php';
+            if (!isCaptchaVerified()) {
+                $_SESSION['given_email'] = $_POST['email'];
+                $_SESSION['error_text'] = 'Captcha nie została zweryfikowana!';
+                header('Location: index.php');
+                exit();
+            }
+
             require_once 'database.php';
 
             if (isExists($db, $_POST['email']) == false) {
@@ -17,6 +25,7 @@
                 $query->execute();
             } else {
                 $_SESSION['error_text'] = 'Taki adres email już istnieje w bazie danych';
+                $_SESSION['given_email'] = $_POST['email'];
                 header('Location: index.php');
             }
         }

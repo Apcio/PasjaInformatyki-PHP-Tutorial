@@ -98,6 +98,27 @@ input[type=submit]:hover
 	background-color: #37b93d;
 }
 
+input[type=submit].unregister
+{
+	width: 200px;
+	background-color: #e40808;
+	font-size: 15px;
+	color: white;
+	padding: 10px 15px;
+	margin-top: 10px;
+	margin-left: 15px;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	letter-spacing: 2px;
+	outline: none;
+}
+
+input[type=submit].unregister:hover
+{
+	background-color: #fd1e00e5;
+}
+
 th, td
 {
 	border: 1px solid black;

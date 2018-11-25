@@ -15,6 +15,8 @@ session_start();
     <!--[if lt IE 9]>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
     <![endif]-->
+
+    <script src='https://www.google.com/recaptcha/api.js'></script>
 </head>
 
 <body>
@@ -35,7 +37,15 @@ session_start();
                           ?>
                         >
                     </label>
+
+                    <br/><br/>
+                    <div class="g-recaptcha" data-sitekey="6LczVmwUAAAAAAWs9_nWo5qWzLmFo7QBUlagI6y_"></div>
+                    <br/><br/>
+
                     <input type="submit" value="Zapisz się!">
+
+                    <br/><br/>
+                    <input class="unregister" type="submit" value="Wypisz się!" formaction="delete.php">
 
                     <?php
                         if (isset($_SESSION['error_text'])) {

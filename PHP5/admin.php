@@ -20,6 +20,7 @@
     <!--[if lt IE 9]>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
     <![endif]-->
+    <script src='https://www.google.com/recaptcha/api.js'></script>
 </head>
 
 <body>
@@ -32,13 +33,18 @@
         <main>
             <article>
                 <form method="post" action="list.php">
-                    <label>Login <input type="text" name="login"></label>
+                    <label>Login <input type="text" name="login" value = <?= isset($_SESSION['user']) ? $_SESSION['user'] : "" ?>></label>
                     <label>Hasło <input type="password" name="pass"></label>
+                    
+                    <br/><br/>
+                    <div class="g-recaptcha" data-sitekey="6LczVmwUAAAAAAWs9_nWo5qWzLmFo7QBUlagI6y_"></div>
+                    <br/><br/>
+                    
                     <input type="submit" value="Zaloguj się!">
 
                     <?php
                         if (isset($_SESSION['bad_attempt'])) {
-                           echo '<p>Niepoprawny login lub hasło!</p>';
+                           echo $_SESSION['bad_attempt'];
                            unset($_SESSION['bad_attempt']); 
                         }
                     ?>
